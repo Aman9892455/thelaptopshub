@@ -1,12 +1,3 @@
-# Node modules folder ignore karo
+
 node_modules/
-
-# Environment variables file ignore karo
 .env
-
-# Logs ignore karo
-*.log
-
-# Operating system specific files ignore karo (Windows/Mac)
-.DS_Store
-Thumbs.db

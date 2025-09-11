@@ -1,8 +1,8 @@
 // Top par yeh lines add karo
 
-
+if (process.env.NODE_ENV !== "production") {
   require('dotenv').config();
-
+}
 
 
 
@@ -23,10 +23,7 @@ const cors = require('cors');
 const app = express();
 const port = 3000;
 
-app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:3000',
-  credentials: true
-}));
+app.use(cors());
 
 // View engine setup
 app.set('view engine', 'ejs');
@@ -397,11 +394,13 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 // Create transporter for nodemailer - यहाँ सही function name use करें
 const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.GOOGLE_APP_PASSWORD // Your app password
-    }
+  host: "smtp.gmail.com",
+  port: 465,
+  secure: true,
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.GOOGLE_APP_PASSWORD
+  }
 });
 
 // Email sending endpoint

@@ -1,8 +1,7 @@
 // Top par yeh lines add karo
 
-if(process.env.NODE_ENV !="production"){
-require('dotenv').config();
-
+if (process.env.NODE_ENV !== "production") {
+  require('dotenv').config();
 }
 
 
@@ -18,10 +17,13 @@ const path = require('path');
 const mongoose=require('mongoose');
 const LaptopListing=require("./model/laptopListing.js")
 const methodOverride = require('method-override');
+const cors = require('cors');
 
 
 const app = express();
 const port = 3000;
+
+app.use(cors());
 
 // View engine setup
 app.set('view engine', 'ejs');
@@ -381,12 +383,12 @@ app.get('/profile', isLoggedIn, (req, res) => {
 
 //recieving data on email  starts from here
 
-const cors = require('cors');
+
 const bodyParser = require('body-parser');
 const nodemailer = require('nodemailer');
 
 // Middleware
-app.use(cors());
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 

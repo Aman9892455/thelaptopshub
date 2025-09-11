@@ -393,5 +393,49 @@
             <p>TheLaptopHub - Your trusted laptop solutions provider</p>
         </div>
     </div>
+
+
+    <script>
+        const form = document.getElementById('contact-form');
+        const messageDiv = document.getElementById('contact-form-message');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            messageDiv.textContent = ''; // Clear previous messages
+            messageDiv.style.color = 'black';
+            messageDiv.textContent = 'Sending...';
+
+            const formData = new FormData(form);
+            const data = Object.fromEntries(formData.entries());
+
+            try {
+                // Yahan badlav kiya gaya hai
+                const response = await fetch('/send-email', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to send message.');
+                }
+
+                const result = await response.json();
+                messageDiv.style.color = 'green';
+                messageDiv.textContent = result.message;
+                form.reset();
+
+            } catch (error) {
+                console.error('Error:', error);
+                messageDiv.style.color = 'red';
+                messageDiv.textContent = 'Error: ' + error.message;
+            }
+        });
+    </script>
+
+
 </body>
 </html>

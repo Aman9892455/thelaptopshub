@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Add Laptop - Dashboard</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <style>
+    body {
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      min-height: 100vh;
+   
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    .container {
+      max-width: 1200px;
+    }
+    
+    .form-container {
+      background: white;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+      margin-bottom: 30px;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      border: 1px solid rgba(0, 0, 0, 0.05);
+    }
+    
+    .form-container:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.12);
+    }
+    
+    .table-header h2 {
+      margin-bottom: 25px;
+      color: #2c3e50;
+      font-weight: 700;
+      position: relative;
+      padding-bottom: 10px;
+    }
+    
+    .table-header h2:after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 60px;
+      height: 4px;
+      background: linear-gradient(to right, #3498db, #2c3e50);
+      border-radius: 2px;
+    }
+    
+    .form-row {
+      display: flex;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+    
+    .form-col {
+      flex: 1;
+    }
+    
+    .form-group {
+      margin-bottom: 20px;
+    }
+    
+    .form-group label {
+      font-weight: 600;
+      color: #2c3e50;
+      margin-bottom: 8px;
+    }
+    
+    .form-control {
+      border: 2px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 12px 15px;
+      font-size: 16px;
+      transition: all 0.3s ease;
+      box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.03);
+    }
+    
+    .form-control:focus {
+      border-color: #3498db;
+      box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.15);
+    }
+    
+    textarea.form-control {
+      height: 100px;
+      resize: vertical;
+    }
+    
+    select.form-control {
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23333' viewBox='0 0 16 16'%3E%3Cpath d='M8 12L2 6h12L8 12z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 15px center;
+      background-size: 16px;
+      padding-right: 40px;
+    }
+    
+    .btn-primary {
+      background: linear-gradient(to right, #3498db, #2c3e50);
+      border: none;
+      padding: 12px 25px;
+      font-weight: 600;
+      font-size: 18px;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+      margin-top: 15px;
+      box-shadow: 0 4px 10px rgba(52, 152, 219, 0.25);
+    }
+    
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 7px 15px rgba(52, 152, 219, 0.35);
+      background: linear-gradient(to right, #2980b9, #1a2530);
+    }
+
+    /* Dashboard Cards */
+    .dashboard-cards {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+    
+    .dashboard-cards .card {
+      flex: 1;
+      min-width: 250px;
+      border-radius: 12px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+      border: 0;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      overflow: hidden;
+    }
+    
+    .dashboard-cards .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 25px rgba(0, 0, 0, 0.12);
+    }
+    
+    .card-header {
+      background: linear-gradient(to right, #3498db, #2c3e50);
+      color: #fff;
+      padding: 18px 20px;
+      font-size: 18px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-radius: 12px 12px 0 0;
+    }
+    
+    .card-header h3 {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 600;
+    }
+    
+    .card-header i {
+      font-size: 22px;
+    }
+    
+    .card-body {
+      padding: 25px 20px;
+      text-align: center;
+    }
+    
+    .stat-number {
+      font-size: 36px;
+      font-weight: 700;
+      color: #3498db;
+      margin-bottom: 5px;
+    }
+    
+    .stat-desc {
+      font-size: 15px;
+      color: #718096;
+    }
+    
+    /* File input styling */
+    input[type="file"] {
+      padding: 10px;
+      border: 2px dashed #cbd5e0;
+      border-radius: 8px;
+      width: 100%;
+      background-color: #f8fafc;
+      transition: all 0.3s ease;
+    }
+    
+    input[type="file"]:hover {
+      border-color: #3498db;
+      background-color: #edf2f7;
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      .form-row {
+        flex-direction: column;
+        gap: 0;
+      }
+      
+      .dashboard-cards .card {
+        min-width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container my-4">
+
+    <!-- Add Laptop starts Form here   -->
+    <div class="form-container">
+      <div class="table-header">
+        <h2>Add New Laptop</h2>
+      </div>
+      <form action="/laptops" method="POST"  enctype="multipart/form-data">
+        <div class="form-row">
+          <div class="form-col">
+            <div class="form-group">
+              <label for="laptopName">Laptop Name *</label>
+              <input type="text" class="form-control" id="laptopName" name="laptopName" required>
+            </div>
+          </div>
+          <div class="form-col">
+            <div class="form-group">
+              <label for="laptopBrand">Brand *</label>
+              <select class="form-control" id="laptopBrand" name="laptopBrand" required>
+                <option value="">Select Brand</option>
+                <option value="Dell">Dell</option>
+                <option value="HP">HP</option>
+                <option value="Lenovo">Lenovo</option>
+                <option value="Apple">Apple</option>
+                <option value="Asus">Asus</option>
+                <option value="Acer">Acer</option>
+                <option value="MSI">MSI</option>
+                <option value="Samsung">Samsung</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-col">
+            <div class="form-group">
+              <label for="laptopPrice">Price ($) *</label>
+              <input type="number" class="form-control" id="laptopPrice" name="laptopPrice" min="0" required>
+            </div>
+          </div>
+          <div class="form-col">
+            <div class="form-group">
+              <label for="laptopCategory">Category *</label>
+              <select class="form-control" id="laptopCategory" name="laptopCategory" required>
+                <option value="">Select Category</option>
+                <option value="Ultrabook">Ultrabook</option>
+                <option value="Gaming">Gaming</option>
+                <option value="Business">Business</option>
+                <option value="Student">Student</option>
+                <option value="Creative Work">Creative Work</option>
+                <option value="Budget">Budget</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="laptopDescription">Description *</label>
+          <textarea class="form-control" id="laptopDescription" name="laptopDescription" required></textarea>
+        </div>
+
+        <div class="form-row">
+          <div class="form-col">
+            <div class="form-group">
+              <label for="laptopProcessor">Processor *</label>
+              <input type="text" class="form-control" id="laptopProcessor" name="laptopProcessor" required>
+            </div>
+          </div>
+          <div class="form-col">
+            <div class="form-group">
+              <label for="laptopRAM">RAM *</label>
+              <select class="form-control" id="laptopRAM" name="laptopRAM" required>
+                <option value="">Select RAM</option>
+                <option value="4GB">4GB</option>
+                <option value="8GB">8GB</option>
+                <option value="16GB">16GB</option>
+                <option value="32GB">32GB</option>
+                <option value="64GB">64GB</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-col">
+            <div class="form-group">
+              <label for="laptopStorage">Storage *</label>
+              <select class="form-control" id="laptopStorage" name="laptopStorage" required>
+                <option value="">Select Storage</option>
+                <option value="128GB SSD">128GB SSD</option>
+                <option value="256GB SSD">256GB SSD</option>
+                <option value="512GB SSD">512GB SSD</option>
+                <option value="1TB SSD">1TB SSD</option>
+                <option value="1TB HDD">1TB HDD</option>
+                <option value="2TB HDD">2TB HDD</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-col">
+            <div class="form-group">
+              <label for="laptopGraphics">Graphics Card</label>
+              <input type="text" class="form-control" id="laptopGraphics" name="laptopGraphics">
+            </div>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-col">
+            <div class="form-group">
+              <label for="laptopDisplay">Display *</label>
+              <input type="text" class="form-control" id="laptopDisplay" name="laptopDisplay" required>
+            </div>
+          </div>
+          <div class="form-col">
+            <div class="form-group">
+              <label for="laptopOS">Operating System *</label>
+              <select class="form-control" id="laptopOS" name="laptopOS" required>
+                <option value="">Select OS</option>
+                <option value="Windows 10">Windows 10</option>
+                <option value="Windows 11">Windows 11</option>
+                <option value="macOS">macOS</option>
+                <option value="Chrome OS">Chrome OS</option>
+                <option value="Linux">Linux</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="laptopImage">Laptop Image URL *</label>
+          <input type="file" name="laptopImage" accept="image/*" />
+        </div>
+
+        <button type="submit" class="btn btn-primary">Add Laptop</button>
+      </form>
+    </div>
+
+
+    <!-- add laptop ends here  -->
+
+    <!-- Dashboard Cards -->
+    <div class="dashboard-cards">
+      <div class="card">
+        <div class="card-header">
+          <h3>Total Laptops</h3>
+          <i class="fas fa-laptop"></i>
+        </div>
+        <div class="card-body">
+          <div class="stat-number"><%= laptopCount %></div>
+          <div class="stat-desc">Added in Listings</div>
+        </div>
+      </div>
+    </div>
+
+  </div> <!-- container -->
+</body>
+</html>

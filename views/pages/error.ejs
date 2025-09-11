@@ -1,0 +1,15 @@
+
+<div class="container mt-5 text-center">
+    <h1>Error <%= statusCode %></h1>
+    <p><%= message %></p>
+    
+    <% if (error && Object.keys(error).length > 0) { %>
+        <div class="alert alert-danger mt-3">
+            <strong>Error Details:</strong> 
+            <pre><%= JSON.stringify(error, null, 2) %></pre>
+        </div>
+    <% } %>
+    
+    <a href="/home" class="btn btn-primary">Go Home</a>
+    <a href="javascript:history.back()" class="btn btn-secondary">Go Back</a>
+</div>

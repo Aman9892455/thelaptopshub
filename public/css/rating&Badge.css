@@ -1,0 +1,26 @@
+.rating {
+    color: #ffc107;
+    margin-bottom: 10px;
+}
+
+.badge {
+    font-weight: 600;
+    padding: 8px 15px;
+    border-radius: 30px;
+    display: inline-block;
+    margin: 5px;
+    transition: all 0.3s ease;
+}
+
+.badge:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+}
+
+.popular-searches {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 30px;
+}

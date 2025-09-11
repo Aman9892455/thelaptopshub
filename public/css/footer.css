@@ -1,0 +1,37 @@
+footer {
+    background: linear-gradient(90deg, var(--dark) 0%, #343a40 100%);
+    color: white;
+    padding: 60px 0 30px;
+    margin-top: auto;
+}
+
+.footer-title {
+    font-weight: 700;
+    margin-bottom: 20px;
+    font-size: 1.5rem;
+}
+
+.footer-links a {
+    color: rgba(255, 255, 255, 0.8);
+    text-decoration: none;
+    transition: all 0.3s ease;
+    display: block;
+    margin-bottom: 10px;
+}
+
+.footer-links a:hover {
+    color: white;
+    transform: translateX(5px);
+}
+
+.social-icons a {
+    color: white;
+    font-size: 1.5rem;
+    margin-right: 15px;
+    transition: all 0.3s ease;
+}
+
+.social-icons a:hover {
+    color: var(--primary);
+    transform: translateY(-5px);
+}

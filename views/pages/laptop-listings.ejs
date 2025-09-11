@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Laptops - TheLaptop Hub</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <style>
+    .search-filter {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      margin-bottom: 30px;
+    }
+    .laptop-card {
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      overflow: hidden;
+      transition: 0.3s ease;
+      height: 100%;
+    }
+    .laptop-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 15px rgba(0,0,0,0.2);
+    }
+    .laptop-image {
+      height: 200px;
+      position: relative;
+      overflow: hidden;
+    }
+    .laptop-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s ease;
+    }
+    .laptop-card:hover .laptop-image img {
+      transform: scale(1.05);
+    }
+    .laptop-badge {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: #6c63ff;
+      color: white;
+      padding: 5px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: bold;
+    }
+    .laptop-content { padding: 20px; }
+    .laptop-price {
+      color: #6c63ff;
+      font-size: 20px;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+    .spec-item {
+      font-size: 14px;
+      margin-bottom: 5px;
+      display: flex;
+      align-items: center;
+    }
+    .spec-item i {
+      color: #6c63ff;
+      margin-right: 8px;
+    }
+    .btn-view {
+      background: #007bff;
+      color: white;
+      width: 100%;
+      margin-top: 10px;
+    }
+    .btn-view:hover {
+      background: #343a40;
+      color: white;
+    }
+    .action-buttons {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .btn-edit {
+      background-color: #f39c12;
+      color: white;
+      flex: 1;
+    }
+    .btn-edit:hover { background-color: #e67e22; }
+    .btn-delete {
+      background-color: #e74c3c;
+      color: white;
+      flex: 1;
+    }
+    .btn-delete:hover { background-color: #c0392b; }
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: #6c757d;
+    }
+    .empty-state i {
+      font-size: 48px;
+      margin-bottom: 20px;
+      color: #dee2e6;
+    }
+  </style>
+</head>
+<body>
+  <div class="container my-4">
+
+    <!-- 🔍 Search and Filter Section -->
+    <div class="search-filter">
+      <div class="row">
+        <div class="col-md-8">
+          <div class="input-group">
+            <input type="text" class="form-control" placeholder="Search laptops...">
+            <button class="btn btn-primary" type="button">
+              <i class="fas fa-search"></i>
+            </button>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <select class="form-select">
+            <option value="">All Categories</option>
+            <option value="Ultrabook">Ultrabook</option>
+            <option value="Gaming">Gaming</option>
+            <option value="Business">Business</option>
+            <option value="Student">Student</option>
+            <option value="Creative Work">Creative Work</option>
+            <option value="Budget">Budget</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- 💻 Laptops Grid -->
+    <% if (laptops.length > 0) { %>
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+      <% laptops.forEach(laptop => { %>
+      <div class="col">
+        <div class="laptop-card">
+          <div class="laptop-image">
+            <img src="<%= laptop.laptopImage %>" alt="<%= laptop.laptopName %>" 
+                 onerror="this.src='https://via.placeholder.com/300x200?text=Image+Not+Found'">
+            <div class="laptop-badge"><%= laptop.laptopCategory %></div>
+          </div>
+          <div class="laptop-content">
+            <h5 class="card-title"><%= laptop.laptopName %></h5>
+            <div class="text-muted mb-2"><%= laptop.laptopBrand %></div>
+            <div class="laptop-price">$<%= laptop.laptopPrice ? laptop.laptopPrice.toLocaleString() : '' %></div>
+            <div class="laptop-specs">
+              <div class="spec-item"><i class="fas fa-microchip"></i><%= laptop.laptopProcessor %></div>
+              <div class="spec-item"><i class="fas fa-memory"></i><%= laptop.laptopRAM %></div>
+              <div class="spec-item"><i class="fas fa-hdd"></i><%= laptop.laptopStorage %></div>
+              <div class="spec-item"><i class="fas fa-info-circle"></i><%= laptop.laptopDescription %></div>
+              <% if (laptop.laptopGraphics) { %>
+                <div class="spec-item"><i class="fas fa-video"></i><%= laptop.laptopGraphics %></div>
+              <% } %>
+              <div class="spec-item"><i class="fas fa-desktop"></i><%= laptop.laptopDisplay %></div>
+              <div class="spec-item"><i class="fas fa-laptop-code"></i><%= laptop.laptopOS %></div>
+            </div>
+
+            <!-- Buttons -->
+            <a href="/getInTouch" class="btn btn-view">
+              <i class="fas fa-eye me-2"></i>RENT NOW
+            </a>
+             <% if (user && user.isAdmin) { %>
+            <div class="action-buttons">
+              <form action="/laptops/<%= laptop._id %>/edit" method="GET">
+                <button type="submit" class="btn btn-edit"><i class="fas fa-edit"></i>Edit</button>
+              </form>
+              <form action="/laptops/<%= laptop._id %>?_method=DELETE" method="POST">
+                <button type="submit" class="btn btn-delete" onclick="return confirm('Are you sure?')">
+                  <i class="fas fa-trash"></i>Delete
+                </button>
+              </form>
+            </div>
+              <% } %>
+          </div>
+        </div>
+      </div>
+      <% }); %>
+    </div>
+
+    <!-- 📄 Pagination -->
+    <nav aria-label="Page navigation" class="mt-5">
+      <ul class="pagination justify-content-center">
+        <li class="page-item disabled">
+          <a class="page-link" href="#" tabindex="-1">Previous</a>
+        </li>
+        <li class="page-item active"><a class="page-link" href="#">1</a></li>
+        <li class="page-item"><a class="page-link" href="#">2</a></li>
+        <li class="page-item"><a class="page-link" href="#">3</a></li>
+        <li class="page-item">
+          <a class="page-link" href="#">Next</a>
+        </li>
+      </ul>
+    </nav>
+
+    <% } else { %>
+    <!-- 🚫 Empty State -->
+    <div class="empty-state">
+      <i class="fas fa-laptop"></i>
+      <h3>No Laptops Found</h3>
+      <p>There are currently no laptops available in our inventory.</p>
+      <a href="/home" class="btn btn-primary mt-3"><i class="fas fa-home me-2"></i>Go Back Home</a>
+    </div>
+    <% } %>
+
+  </div>
+
+
+
+  <script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.querySelector('.search-filter input[type="text"]');
+    const categoryFilter = document.querySelector('.search-filter select');
+    const laptopCards = document.querySelectorAll('.laptop-card');
+
+    function filterLaptops() {
+      const searchText = searchInput.value.toLowerCase();
+      const selectedCategory = categoryFilter.value.toLowerCase();
+
+      laptopCards.forEach(card => {
+        const title = card.querySelector('.card-title').textContent.toLowerCase();
+        const brand = card.querySelector('.text-muted').textContent.toLowerCase();
+        const category = card.querySelector('.laptop-badge').textContent.toLowerCase();
+
+        // Check if search text matches title or brand
+        const matchesSearch = title.includes(searchText) || brand.includes(searchText);
+        // Check if category matches or no category selected
+        const matchesCategory = selectedCategory === '' || category.includes(selectedCategory);
+
+        // Show card if both search and category match
+        if (matchesSearch && matchesCategory) {
+          card.parentElement.style.display = ''; // Show column div
+        } else {
+          card.parentElement.style.display = 'none'; // Hide column div
+        }
+      });
+    }
+
+    searchInput.addEventListener('input', filterLaptops);
+    categoryFilter.addEventListener('change', filterLaptops);
+  });
+</script>
+
+</body>
+</html>

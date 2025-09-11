@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TheLaptopHub - Location</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
+            color: #2d3748;
+            line-height: 1.6;
+            min-height: 100vh;
+        } */
+        
+        /* .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        } */
+        
+        /* Header Styles */
+        .page-header {
+            text-align: center;
+            margin: 30px 0;
+            padding: 20px;
+        }
+        
+        .page-header h1 {
+            font-size: 2.5rem;
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+        
+        .page-header p {
+            color: #718096;
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        /* Main Content Styles - VERTICAL LAYOUT */
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+            margin: 40px 0;
+        }
+        
+        .map-container {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            width: 100%;
+        }
+        
+        .map-container:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.12);
+        }
+        
+        .map-container h2 {
+            padding: 20px;
+            color: #2c3e50;
+            border-bottom: 2px solid #4CAF50;
+            margin-bottom: 0;
+            display: flex;
+            align-items: center;
+            background: linear-gradient(135deg, #2c3e50 0%, #4A5568 100%);
+            color: white;
+        }
+        
+        .map-container h2 i {
+            margin-right: 10px;
+            color: #4CAF50;
+        }
+        
+        .google-map-iframe {
+            width: 100%;
+            height: 500px;
+            border: none;
+            display: block;
+        }
+        
+        /* Location Info */
+        .location-info {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            width: 100%;
+        }
+        
+        .location-info:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.12);
+        }
+        
+        .location-info h2 {
+            color: #2c3e50;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #4CAF50;
+            display: flex;
+            align-items: center;
+            font-size: 1.8rem;
+        }
+        
+        .location-info h2 i {
+            margin-right: 10px;
+            color: #4CAF50;
+            background: #e8f5e9;
+            padding: 10px;
+            border-radius: 50%;
+        }
+        
+        .location-details {
+            margin-bottom: 25px;
+        }
+        
+        .location-details h3 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+            position: relative;
+            padding-left: 15px;
+        }
+        
+        .location-details h3:before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            height: 70%;
+            width: 5px;
+            background: #4CAF50;
+            border-radius: 10px;
+        }
+        
+        .location-details p {
+            color: #4A5568;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: flex-start;
+            padding: 8px 0;
+            border-bottom: 1px dashed #e2e8f0;
+        }
+        
+        .location-details p:last-child {
+            border-bottom: none;
+        }
+        
+        .location-details p i {
+            margin-right: 12px;
+            color: #4CAF50;
+            min-width: 24px;
+            background: #e8f5e9;
+            padding: 8px;
+            border-radius: 50%;
+            text-align: center;
+        }
+        
+        .highlight-box {
+            background: linear-gradient(135deg, #e8f5e9 0%, #d5efd7 100%);
+            border-left: 4px solid #4CAF50;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 25px 0;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .highlight-box h4 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            font-size: 1.3rem;
+        }
+        
+        .highlight-box h4 i {
+            margin-right: 10px;
+            color: #4CAF50;
+        }
+        
+        .highlight-box p {
+            color: #4A5568;
+            line-height: 1.7;
+        }
+        
+        /* Contact Info Styles */
+        .contact-section {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            margin: 40px 0;
+            text-align: center;
+        }
+        
+        .contact-section h2 {
+            color: #2c3e50;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #4CAF50;
+            font-size: 1.8rem;
+        }
+        
+        .contact-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-top: 20px;
+        }
+        
+        .contact-card {
+            background: #f7fafc;
+            border-radius: 10px;
+            padding: 25px;
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .contact-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            background: white;
+        }
+        
+        .contact-icon {
+            background: #4CAF50;
+            color: white;
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            margin: 0 auto 20px;
+        }
+        
+        .contact-card h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+        
+        .contact-card p {
+            color: #4A5568;
+            margin-bottom: 5px;
+        }
+        
+        .contact-card .contact-label {
+            color: #718096;
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+        
+        /* Footer Styles */
+        .simple-footer {
+            text-align: center;
+            padding: 30px 0;
+            margin-top: 50px;
+            color: #718096;
+            border-top: 1px solid #e2e8f0;
+        }
+        
+        /* Responsive Styles */
+        @media (max-width: 900px) {
+            .google-map-iframe {
+                height: 400px;
+            }
+            
+            .contact-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .page-header h1 {
+                font-size: 2rem;
+            }
+        }
+        
+        /* Animation */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .main-content, .contact-section {
+            animation: fadeIn 0.6s ease-out;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1><i class="fas fa-laptop-code"></i> TheLaptopHub Location</h1>
+            <p>Find us easily with the information below. We're always here to help with your laptop needs!</p>
+        </div>
+        
+        <!-- Main Content - VERTICAL LAYOUT -->
+        <div class="main-content">
+            <!-- Map Container with Google Maps Iframe -->
+            <div class="map-container">
+                <h2><i class="fas fa-map-marked-alt"></i> Our Prime Location</h2>
+                <iframe 
+                    class="google-map-iframe"
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3771.8279940512366!2d72.86792447466398!3d19.027299653500727!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3be7cf39e3d05045%3A0x34692578d405a50e!2sShaikh%20Misri%20Dargah%20Rd%2C%20Mumbai%2C%20Maharashtra%20400037!5e0!3m2!1sen!2sin!4v1756552112004!5m2!1sen!2sin" 
+                    allowfullscreen="" 
+                    loading="lazy" 
+                    referrerpolicy="no-referrer-when-downgrade">
+                </iframe>
+            </div>
+
+            <!-- Location Information -->
+            <div class="location-info">
+                <h2><i class="fas fa-info-circle"></i> Location Details</h2>
+                
+                <div class="location-details">
+                    <h3>Shaikh Misri Dargah Rd, Antop Hill</h3>
+                    <p><i class="fas fa-map-marker-alt"></i> Near Shaikh Misri Dargah, Antop Hill</p>
+                    <p><i class="fas fa-city"></i> Mumbai, Maharashtra 400037</p>
+                    <p><i class="fas fa-clock"></i> Open: 8:00 AM - 8:00 PM (All days)</p>
+                    <p><i class="fas fa-subway"></i> Nearest Station: Wadala Road (1.2 km)</p>
+                </div>
+                
+                <div class="highlight-box">
+                    <h4><i class="fas fa-star"></i> Why Visit Our Store?</h4>
+                    <p>Our location at Shaikh Misri Dargah Road is strategically positioned to serve all your laptop needs. We offer expert advice, genuine products, and exceptional after-sales service in a convenient and accessible location.</p>
+                </div>
+                
+                <div class="location-details">
+                    <h3>Store Facilities</h3>
+                    <p><i class="fas fa-wifi"></i> Free High-Speed Wi-Fi</p>
+                    <p><i class="fas fa-coffee"></i> Complimentary Refreshments</p>
+                    <p><i class="fas fa-parking"></i> Customer Parking Available</p>
+                    <p><i class="fas fa-couch"></i> Comfortable Waiting Area</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contact Information -->
+        <div class="contact-section">
+            <h2><i class="fas fa-headset"></i> Contact TheLaptopHub</h2>
+            <p>Reach out to us through any of these channels</p>
+            
+            <div class="contact-grid">
+                <div class="contact-card">
+                    <div class="contact-icon">
+                        <i class="fas fa-phone"></i>
+                    </div>
+                    <h3>Customer Support</h3>
+                    <p>+91 1234567890</p>
+                    <p class="contact-label">Mon-Sat, 9AM-6PM</p>
+                </div>
+                
+                <div class="contact-card">
+                    <div class="contact-icon">
+                        <i class="fas fa-phone-alt"></i>
+                    </div>
+                    <h3>Sales Department</h3>
+                    <p>+91 9876543210</p>
+                    <p class="contact-label">Mon-Sat, 10AM-7PM</p>
+                </div>
+                
+                <div class="contact-card">
+                    <div class="contact-icon">
+                        <i class="fas fa-envelope"></i>
+                    </div>
+                    <h3>Email Us</h3>
+                    <p>info@thelaptophub.com</p>
+                    <p class="contact-label">Response within 24 hours</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Simple Footer -->
+        <div class="simple-footer">
+            <p>TheLaptopHub - Your trusted laptop solutions provider</p>
+        </div>
+    </div>
+</body>
+</html>

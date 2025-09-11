@@ -1,0 +1,47 @@
+<!-- Navigation -->
+<nav class="navbar navbar-expand-lg navbar-dark sticky-top">
+    <div class="container">
+        <a class="navbar-brand" href="#">
+            <i class="fas fa-laptop-code me-2"></i>TheLaptop Hub
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link active" href="/home">HOME</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/aboutUs">ABOUT US</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/getInTouch">GET IN TOUCH</a>
+                </li>
+                <% if (currUser && currUser.isAdmin) { %>
+                  <li class="nav-item">
+                  <a class="nav-link" href="/adminPanel">ADMIN PANEL</a>
+                    </li>
+                 <% } %>
+                
+                <li class="nav-item">
+                    <a class="nav-link" href="/laptops">LAPTOPS</a>
+                </li>
+
+                <li class="nav-item">
+                <a class="nav-link" href="/contact">CONTACT US</a>
+                </li>
+       <% if (currUser) { %>
+    <li class="nav-item"><a class="nav-link" href="/logout">LOG OUT</a></li>
+    <li class="nav-item"><span class="nav-link">Welcome, <%= currUser.name %></span></li>
+  <% } else { %>
+    <li class="nav-item"><a class="nav-link fw-bold" href="/login">LOG IN</a></li>
+    <li class="nav-item"><a class="nav-link fw-bold" href="/signup">SIGN UP</a></li>
+  <% } %>
+
+                
+            </ul>
+           
+        </div>
+    </div>
+</nav>

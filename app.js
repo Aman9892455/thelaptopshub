@@ -575,9 +575,18 @@ app.post('/reset-password/:token', async (req, res) => {
 
 
 // Routes
-app.get('/', (req, res) => {
-  res.send('Hello World!');
-  
+app.get('/', async (req, res, next) => {
+  try {
+    let laptops = await LaptopListing.find({});
+    res.render('pages/home', { 
+      title: 'Home - The Laptop Hub',
+      laptops,
+      hideNavbar: false,
+      hideFooter: false 
+    });
+  } catch (error) {
+    next(error);
+  }
 });
 
 app.get('/home', async (req, res,next) => {

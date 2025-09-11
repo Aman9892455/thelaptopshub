@@ -1,8 +1,8 @@
 // Top par yeh lines add karo
 
-if (process.env.NODE_ENV !== "production") {
+
   require('dotenv').config();
-}
+
 
 
 
@@ -23,7 +23,10 @@ const cors = require('cors');
 const app = express();
 const port = 3000;
 
-app.use(cors());
+app.use(cors({
+  origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+  credentials: true
+}));
 
 // View engine setup
 app.set('view engine', 'ejs');

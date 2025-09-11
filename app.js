@@ -395,8 +395,8 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // Create transporter for nodemailer - यहाँ सही function name use करें
 const transporter = nodemailer.createTransport({
   host: "smtp.gmail.com",
-  port: 465,
-  secure: true,
+  port: 587,
+  secure: false, // TLS
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.GOOGLE_APP_PASSWORD

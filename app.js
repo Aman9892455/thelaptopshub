@@ -404,14 +404,16 @@ const transporter = nodemailer.createTransport({
 });
 
 // Email sending endpoint
-app.post('/send-email', async (req, res,next) => {
+// Email sending endpoint
+app.post('/send-email', async (req, res, next) => {
     try {
         const { name, email, subject, message } = req.body;
 
         // Setup email data
         const mailOptions = {
-            from: email,
+            from: process.env.EMAIL_USER, // <-- Yahan badlav karein
             to: 'amanv1871@gmail.com',
+            replyTo: email, // <-- yeh optional hai, isse aap directly reply kar payenge
             subject: `Contact Form: ${subject}`,
             html: `
                 <h2>New Contact Form Submission</h2>
@@ -432,7 +434,6 @@ app.post('/send-email', async (req, res,next) => {
         res.status(500).json({ message: 'Error sending email', error: error.message });
     }
 });
-
 
 
 

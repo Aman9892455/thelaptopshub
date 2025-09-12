@@ -19,7 +19,7 @@ const port = process.env.PORT || 3000;
 const corsOptions = {
   origin: "https://thelaptopshub.onrender.com",
   methods: ["GET", "POST", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"]
+  allowedHeaders: ["Content-Type"]
 };
 app.use(cors(corsOptions));
 

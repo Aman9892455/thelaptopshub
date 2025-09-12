@@ -21,13 +21,28 @@ const cors = require('cors');
 
 
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 3000;
 
-app.use(cors({
-  origin: "https://thelaptopshub.onrender.com",  // tumhara frontend domain
-  methods: ["GET", "POST"],
+const corsOptions = {
+  origin: "https://thelaptopshub.onrender.com",
+  methods: ["GET", "POST", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"]
-}));
+};
+app.use(cors(corsOptions));
+
+app.options('/*any', cors(corsOptions));
+
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', 'https://thelaptopshub.onrender.com');
+  res.header('Access-Control-Allow-Methods', 'GET,POST,OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  if (req.method === 'OPTIONS') {
+    return res.sendStatus(200);
+  }
+  next();
+});
+
+
 // View engine setup
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, '/views'));
@@ -396,47 +411,78 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 // Create transporter for nodemailer - यहाँ सही function name use करें
-const transporter = nodemailer.createTransport({
-   host: "smtp-relay.brevo.com",
-  port: 587,
 
+
+// Email sending endpoint
+
+
+const transporter = nodemailer.createTransport({
+  host: "smtp.gmail.com",
+  port: 587,
+  secure: false, // TLS इस्तेमाल करता है
   auth: {
-   user: process.env.BREVO_EMAIL_USER, //process.env.EMAIL_USER,
-    pass: process.env.BREVO_API_KEY   //process.env.GOOGLE_APP_PASSWORD
+    user: process.env.EMAIL_USER,  // Gmail एड्रेस
+    pass: process.env.GOOGLE_APP_PASSWORD   // Gmail ऐप पासवर्ड (2FA होने पर)
   }
-  
 });
 
-// Email sending endpoint
-// Email sending endpoint
-app.post('/send-email', async (req, res, next) => {
+//
+
+app.post('/send-email', async (req, res) => {
   try {
-    const { name, email, subject, message } = req.body;
+    const { first_name, last_name, email, mobile, subject, message } = req.body;
+
+    // बेसिक वैलिडेशन
+    if (!first_name || !last_name || !subject) {
+      return res.status(400).json({ error: "First Name, Last Name और Subject जरूरी हैं।" });
+    }
+
     const mailOptions = {
-      from: `"TheLaptopHub" <${process.env.BREVO_EMAIL_USER}>`, // ब्रेओ अकाउंट email
-      to: 'amanv1871@gmail.com', // जहाँ भेजना हो
-      replyTo: email,
-      subject: `Contact Form: ${subject}`,
+      from: `"FixedMyRent" <${process.env.EMAIL_USER}>`,
+      to: 'amanv1871@gmail.com',  // अपनी तरफ से भी सेट कर सकते हैं, जैसे sales@example.com
+      subject: `Inquiry from: ${first_name} ${last_name} - ${subject}`,
       html: `
-        <h2>New Contact Form Submission</h2>
-        <p><strong>Name:</strong> ${name}</p>
+        <h1>You have received a new inquiry</h1>
+        <p><strong>First Name:</strong> ${first_name}</p>
+        <p><strong>Last Name:</strong> ${last_name}</p>
+        <p><strong>Mobile:</strong> ${mobile}</p>
         <p><strong>Email:</strong> ${email}</p>
         <p><strong>Subject:</strong> ${subject}</p>
-        <p><strong>Message:</strong></p>
-        <p>${message}</p>
+        <p><strong>Message:</strong> ${message}</p>
       `
     };
 
     await transporter.sendMail(mailOptions);
-    res.status(200).json({ message: 'Email sent successfully!' });
+
+    res.json({ message: "Thank You! Your enquiry has been sent successfully, You will be contacted soon." });
   } catch (error) {
-    console.error('Error sending email:', error);
-    res.status(500).json({ message: 'Error sending email', error: error.message });
+    console.error("Error sending email:", error);
+    res.status(500).json({ error: "Failed to send email." });
   }
 });
 
 
+
 //recieving  mail  ends here
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

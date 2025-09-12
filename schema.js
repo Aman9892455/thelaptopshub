@@ -1,8 +1,7 @@
 // Top par yeh lines add karo
+require('dotenv').config();
 
-if (process.env.NODE_ENV !== "production") {
-  require('dotenv').config();
-}
+
 
 
 
@@ -17,16 +16,10 @@ const path = require('path');
 const mongoose=require('mongoose');
 const LaptopListing=require("./model/laptopListing.js")
 const methodOverride = require('method-override');
-const cors = require('cors');
 
 
 const app = express();
 const port = 3000;
-
-app.use(cors({
-    origin: "https://thelaptopshub.onrender.com", // frontend ka domain
-    methods: ["GET", "POST"]
-}));
 
 // View engine setup
 app.set('view engine', 'ejs');
@@ -82,16 +75,16 @@ function validateLaptop(req, res, next) {
 }
 
 
-// function validateUser(req, res, next) {
-//   const { error } = userValidationSchema.validate(req.body, { abortEarly: false }); // sab errors collect karne ke liye
-//   if (error) {
-//     // Joi ke sab error messages ko ek string me convert karo
-//     const errorMessages = error.details.map(err => err.message).join(', ');
-//     req.flash('error', errorMessages);
-//     return res.redirect('/signup'); // ya jis page pe validation fail hota hai wahan redirect karo
-//   }
-//   next();
-// }
+function validateUser(req, res, next) {
+  const { error } = userValidationSchema.validate(req.body, { abortEarly: false }); // sab errors collect karne ke liye
+  if (error) {
+    // Joi ke sab error messages ko ek string me convert karo
+    const errorMessages = error.details.map(err => err.message).join(', ');
+    req.flash('error', errorMessages);
+    return res.redirect('/signup'); // ya jis page pe validation fail hota hai wahan redirect karo
+  }
+  next();
+}
 
 
 
@@ -106,31 +99,7 @@ const bcrypt = require('bcryptjs');
 
 
 
-const User = require('./model/user.js'); // Mongoose User model
-const Joi = require('joi');
-
-
-
-// Joi validation schema
-// Joi validation schema for signup
-const userValidationSchema = Joi.object({
-  name: Joi.string().trim().required().messages({
-    'string.empty': 'Name is required',
-  }),
-  email: Joi.string().email().trim().lowercase().required().messages({
-    'string.email': 'Invalid email format',
-    'string.empty': 'Email is required',
-  }),
-  password: Joi.string().min(6).required().messages({
-    'string.min': 'Password must be at least 6 characters',
-    'string.empty': 'Password is required',
-  }),
-  confirmPassword: Joi.any(),  // No validation for now just allow it through
-});
-
-
-
-
+const User = require("./model/user.js"); // Mongoose User model
 
 // Middleware setup
 app.use(express.urlencoded({ extended: true }));
@@ -197,32 +166,7 @@ app.get('/login', (req, res) => {
 });
 
 // Login POST
-
-const loginValidationSchema = Joi.object({
-  
-  email: Joi.string().email().trim().lowercase().required().messages({
-    'string.email': 'Invalid email format',
-    'string.empty': 'Email is required',
-  }),
-  password: Joi.string().min(6).required().messages({
-    'string.min': 'Password must be at least 6 characters',
-    'string.empty': 'Password is required',
-  }),
-});
-
-
-function validateLogin(req, res, next) {
-  const { error } = loginValidationSchema.validate(req.body, { abortEarly: false });
-  if (error) {
-    const errorMsgs = error.details.map(e => e.message).join(', ');
-    req.flash('error', errorMsgs);
-    return res.redirect('/login');
-  }
-  next();
-}
-
-
-app.post('/login',validateLogin, (req, res, next) => {
+app.post('/login',validateUser, (req, res, next) => {
   passport.authenticate('local', (err, user, info) => {
     if (err) return next(err);
     if (!user) {
@@ -277,59 +221,40 @@ app.get('/signup', (req, res,next) => {
   }
 });
 
-
-
-
-//signup middleware
-// Validate user middleware
-// Validation Middleware
-function validateUser(req, res, next) {
-  const { error } = userValidationSchema.validate(req.body, { abortEarly: false });
-  if (error) {
-    const errorMsgs = error.details.map(e => e.message).join(', ');
-    req.flash('error', errorMsgs);
-    return res.redirect('/signup');
-  }
-  next();
-}
 // Signup POST
+app.post('/signup', async (req, res) => { try {
+ const { name, email, password, confirmPassword } = req.body;
+ if (password !== confirmPassword) {
+ req.flash('error', 'Passwords do not match');
+ return res.redirect('/signup');
+ }
 
-app.get('/signup', (req, res) => {
-  res.render('pages/signup', {
-    hideNavbar: false,
-    hideFooter: false,
-  });
+
+ const existingUser = await User.findOne({ email });
+ if (existingUser) {
+req.flash('error', 'User already exists with this email');
+return res.redirect('/signup');
+ }
+
+
+ const hashedPassword = await bcrypt.hash(password, 12);
+ const user = new User({ name, email, password: hashedPassword });
+ await user.save();
+
+
+ req.login(user, (err) => {
+ if (err) {
+ req.flash('error', 'Error during auto login');
+ return res.redirect('/login');
+ }
+ return res.redirect('/home');
+ });
+ } catch (error) {
+ console.error(error);
+req.flash('error', 'Server error during registration');
+ res.redirect('/signup');
+ }
 });
-app.post('/signup', validateUser, async (req, res) => {
-  try {
-    const { name, email, password, confirmPassword } = req.body;
-    if (password !== confirmPassword) {
-      req.flash('error', 'Passwords do not match');
-      return res.redirect('/signup');
-    }
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
-      req.flash('error', 'User already exists with this email');
-      return res.redirect('/signup');
-    }
-    const hashedPassword = await bcrypt.hash(password, 12);
-    const user = new User({ name, email, password: hashedPassword });
-    await user.save();
-    req.login(user, err => {
-      if (err) {
-        req.flash('error', 'Auto login failed');
-        return res.redirect('/login');
-      }
-      return res.redirect('/home');
-    });
-  } catch (error) {
-    console.error(error);
-    req.flash('error', 'Server error during registration');
-    res.redirect('/signup');
-  }
-});
-
-
 
 
 
@@ -386,54 +311,55 @@ app.get('/profile', isLoggedIn, (req, res) => {
 
 //recieving data on email  starts from here
 
-
+const cors = require('cors');
 const bodyParser = require('body-parser');
 const nodemailer = require('nodemailer');
 
 // Middleware
-
+app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 // Create transporter for nodemailer - यहाँ सही function name use करें
 const transporter = nodemailer.createTransport({
-   host: "smtp-relay.brevo.com",
-  port: 587,
-
-  auth: {
-   user: process.env.BREVO_EMAIL_USER, //process.env.EMAIL_USER,
-    pass: process.env.BREVO_API_KEY   //process.env.GOOGLE_APP_PASSWORD
-  }
-  
+    service: 'gmail',
+    auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.GOOGLE_APP_PASSWORD // Your app password
+    }
 });
 
 // Email sending endpoint
-// Email sending endpoint
-app.post('/send-email', async (req, res, next) => {
-  try {
-    const { name, email, subject, message } = req.body;
-    const mailOptions = {
-      from: `"TheLaptopHub" <${process.env.BREVO_EMAIL_USER}>`, // ब्रेओ अकाउंट email
-      to: 'amanv1871@gmail.com', // जहाँ भेजना हो
-      replyTo: email,
-      subject: `Contact Form: ${subject}`,
-      html: `
-        <h2>New Contact Form Submission</h2>
-        <p><strong>Name:</strong> ${name}</p>
-        <p><strong>Email:</strong> ${email}</p>
-        <p><strong>Subject:</strong> ${subject}</p>
-        <p><strong>Message:</strong></p>
-        <p>${message}</p>
-      `
-    };
+app.post('/send-email', async (req, res,next) => {
+    try {
+        const { name, email, subject, message } = req.body;
 
-    await transporter.sendMail(mailOptions);
-    res.status(200).json({ message: 'Email sent successfully!' });
-  } catch (error) {
-    console.error('Error sending email:', error);
-    res.status(500).json({ message: 'Error sending email', error: error.message });
-  }
+        // Setup email data
+        const mailOptions = {
+            from: email,
+            to: 'amanv1871@gmail.com',
+            subject: `Contact Form: ${subject}`,
+            html: `
+                <h2>New Contact Form Submission</h2>
+                <p><strong>Name:</strong> ${name}</p>
+                <p><strong>Email:</strong> ${email}</p>
+                <p><strong>Subject:</strong> ${subject}</p>
+                <p><strong>Message:</strong></p>
+                <p>${message}</p>
+            `
+        };
+
+        // Send email
+        await transporter.sendMail(mailOptions);
+        
+        res.status(200).json({ message: 'Email sent successfully!' });
+    } catch (error) {
+        console.error('Error sending email:', error);
+        res.status(500).json({ message: 'Error sending email', error: error.message });
+    }
 });
+
+
 
 
 //recieving  mail  ends here
@@ -579,18 +505,9 @@ app.post('/reset-password/:token', async (req, res) => {
 
 
 // Routes
-app.get('/', async (req, res, next) => {
-  try {
-    let laptops = await LaptopListing.find({});
-    res.render('pages/home', { 
-      title: 'Home - The Laptop Hub',
-      laptops,
-      hideNavbar: false,
-      hideFooter: false 
-    });
-  } catch (error) {
-    next(error);
-  }
+app.get('/', (req, res) => {
+  res.send('Hello World!');
+  
 });
 
 app.get('/home', async (req, res,next) => {
@@ -954,10 +871,302 @@ app.listen(port, () => {
 
 
 
+//signup ejs code 
 
 
 
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - The Laptop Hub</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            color: #333;
+        } */
+        
+        .signup-container {
+            width: 100%;
+            max-width: 500px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            margin: 0 auto;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #3494E6 0%, #3457D5 100%);
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-weight: 600;
+            font-size: 28px;
+            margin: 0;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+        }
+        
+        .form-container {
+            padding: 30px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #444;
+            font-size: 15px;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 14px 15px 14px 45px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 15px;
+            transition: all 0.3s;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: #3494E6;
+            box-shadow: 0 0 0 3px rgba(52, 148, 230, 0.2);
+        }
+        
+        .input-icon {
+            position: absolute;
+            left: 15px;
+            top: 40px;
+            color: #3494E6;
+            font-size: 18px;
+        }
+        
+        .error {
+            color: #e74c3c;
+            font-size: 14px;
+            margin-top: 5px;
+            display: none;
+        }
+        
+        .submit-button {
+            background: linear-gradient(135deg, #3494E6 0%, #3457D5 100%);
+            border: none;
+            color: white;
+            padding: 15px;
+            border-radius: 6px;
+            width: 100%;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+        
+        .submit-button:hover {
+            background: linear-gradient(135deg, #3457D5 0%, #3494E6 100%);
+            box-shadow: 0 5px 15px rgba(52, 87, 213, 0.3);
+        }
+        
+        .login-link {
+            text-align: center;
+            margin-top: 25px;
+            color: #666;
+            font-size: 15px;
+        }
+        
+        .login-link a {
+            color: #3494E6;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+        
+        .login-link a:hover {
+            color: #3457D5;
+            text-decoration: underline;
+        }
+        
+        .password-rules {
+            background: #f8f9fa;
+            border-left: 4px solid #3494E6;
+            padding: 12px 15px;
+            margin-top: 20px;
+            border-radius: 4px;
+            font-size: 14px;
+            color: #555;
+        }
+        
+        .password-rules ul {
+            padding-left: 20px;
+            margin: 8px 0 0 0;
+        }
+        
+        .password-rules li {
+            margin-bottom: 4px;
+        }
+        
+        @media (max-width: 576px) {
+            .container {
+                border-radius: 10px;
+            }
+            
+            .form-container {
+                padding: 20px;
+            }
+            
+            .header {
+                padding: 25px 15px;
+            }
+            
+            .header h1 {
+                font-size: 24px;
+            }
+        }
+        
+        .logo {
+            text-align: center;
+            margin-bottom: 15px;
+        }
+        
+        .logo i {
+            font-size: 40px;
+            color: #3494E6;
+            background: rgba(52, 148, 230, 0.1);
+            padding: 15px;
+            border-radius: 50%;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="signup-container">
+        <div class="header">
+            <div class="logo">
+                <i class="fas fa-laptop"></i>
+            </div>
+            <h1>Create Your Account</h1>
+        </div>
+        
+        <div class="form-container">
+            <form id="signupForm" action="/signup" method="POST">
+                <div class="form-group">
+                    <label for="name">Full Name</label>
+                    <i class="fas fa-user input-icon"></i>
+                    <input type="text" id="name" name="name" placeholder="Enter your full name" required>
+                    <div class="error" id="nameError"></div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <i class="fas fa-envelope input-icon"></i>
+                    <input type="email" id="email" name="email" placeholder="Enter your email address" required>
+                    <div class="error" id="emailError"></div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <i class="fas fa-lock input-icon"></i>
+                    <input type="password" id="password" name="password" placeholder="Create a strong password" required>
+                    <div class="error" id="passwordError"></div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="confirmPassword">Confirm Password</label>
+                    <i class="fas fa-lock input-icon"></i>
+                    <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Confirm your password" required>
+                    <div class="error" id="confirmPasswordError"></div>
+                </div>
+                
+                <div class="password-rules">
+                    <strong>Password must:</strong>
+                    <ul>
+                        <li>Be at least 6 characters long</li>
+                        <li>Include letters and numbers</li>
+                    </ul>
+                </div>
+                
+                <button type="submit" class="submit-button">Create Account</button>
+            </form>
 
+            
+            
+            <div class="login-link">
+                <p>Already have an account? <a href="/login">Login here</a></p>
+            </div>
+        </div>
+    </div>
 
-
+    <script>
+        document.getElementById('signupForm').addEventListener('submit', function(e) {
+            let isValid = true;
+            
+            // Clear previous errors
+            document.querySelectorAll('.error').forEach(el => {
+                el.style.display = 'none';
+                el.textContent = '';
+            });
+            
+            // Name validation
+            const name = document.getElementById('name').value.trim();
+            if (name.length < 2) {
+                document.getElementById('nameError').textContent = 'Name must be at least 2 characters long';
+                document.getElementById('nameError').style.display = 'block';
+                isValid = false;
+            }
+            
+            // Email validation
+            const email = document.getElementById('email').value;
+            const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailPattern.test(email)) {
+                document.getElementById('emailError').textContent = 'Please enter a valid email address';
+                document.getElementById('emailError').style.display = 'block';
+                isValid = false;
+            }
+            
+            // Password validation
+            const password = document.getElementById('password').value;
+            if (password.length < 6) {
+                document.getElementById('passwordError').textContent = 'Password must be at least 6 characters long';
+                document.getElementById('passwordError').style.display = 'block';
+                isValid = false;
+            }
+            
+            // Confirm password validation
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            if (password !== confirmPassword) {
+                document.getElementById('confirmPasswordError').textContent = 'Passwords do not match';
+                document.getElementById('confirmPasswordError').style.display = 'block';
+                isValid = false;
+            }
+            
+            if (!isValid) {
+                e.preventDefault();
+            }
+        });
+    </script>
+</body>
+</html>

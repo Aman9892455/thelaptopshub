@@ -1,8 +1,7 @@
 // Top par yeh lines add karo
+require('dotenv').config();
 
-if (process.env.NODE_ENV !== "production") {
-  require('dotenv').config();
-}
+
 
 
 
@@ -17,16 +16,10 @@ const path = require('path');
 const mongoose=require('mongoose');
 const LaptopListing=require("./model/laptopListing.js")
 const methodOverride = require('method-override');
-const cors = require('cors');
 
 
 const app = express();
 const port = 3000;
-
-app.use(cors({
-    origin: "https://thelaptopshub.onrender.com", // frontend ka domain
-    methods: ["GET", "POST"]
-}));
 
 // View engine setup
 app.set('view engine', 'ejs');
@@ -386,54 +379,55 @@ app.get('/profile', isLoggedIn, (req, res) => {
 
 //recieving data on email  starts from here
 
-
+const cors = require('cors');
 const bodyParser = require('body-parser');
 const nodemailer = require('nodemailer');
 
 // Middleware
-
+app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 // Create transporter for nodemailer - यहाँ सही function name use करें
 const transporter = nodemailer.createTransport({
-   host: "smtp-relay.brevo.com",
-  port: 587,
-
-  auth: {
-   user: process.env.BREVO_EMAIL_USER, //process.env.EMAIL_USER,
-    pass: process.env.BREVO_API_KEY   //process.env.GOOGLE_APP_PASSWORD
-  }
-  
+    service: 'gmail',
+    auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.GOOGLE_APP_PASSWORD // Your app password
+    }
 });
 
 // Email sending endpoint
-// Email sending endpoint
-app.post('/send-email', async (req, res, next) => {
-  try {
-    const { name, email, subject, message } = req.body;
-    const mailOptions = {
-      from: `"TheLaptopHub" <${process.env.BREVO_EMAIL_USER}>`, // ब्रेओ अकाउंट email
-      to: 'amanv1871@gmail.com', // जहाँ भेजना हो
-      replyTo: email,
-      subject: `Contact Form: ${subject}`,
-      html: `
-        <h2>New Contact Form Submission</h2>
-        <p><strong>Name:</strong> ${name}</p>
-        <p><strong>Email:</strong> ${email}</p>
-        <p><strong>Subject:</strong> ${subject}</p>
-        <p><strong>Message:</strong></p>
-        <p>${message}</p>
-      `
-    };
+app.post('/send-email', async (req, res,next) => {
+    try {
+        const { name, email, subject, message } = req.body;
 
-    await transporter.sendMail(mailOptions);
-    res.status(200).json({ message: 'Email sent successfully!' });
-  } catch (error) {
-    console.error('Error sending email:', error);
-    res.status(500).json({ message: 'Error sending email', error: error.message });
-  }
+        // Setup email data
+        const mailOptions = {
+            from: email,
+            to: 'amanv1871@gmail.com',
+            subject: `Contact Form: ${subject}`,
+            html: `
+                <h2>New Contact Form Submission</h2>
+                <p><strong>Name:</strong> ${name}</p>
+                <p><strong>Email:</strong> ${email}</p>
+                <p><strong>Subject:</strong> ${subject}</p>
+                <p><strong>Message:</strong></p>
+                <p>${message}</p>
+            `
+        };
+
+        // Send email
+        await transporter.sendMail(mailOptions);
+        
+        res.status(200).json({ message: 'Email sent successfully!' });
+    } catch (error) {
+        console.error('Error sending email:', error);
+        res.status(500).json({ message: 'Error sending email', error: error.message });
+    }
 });
+
+
 
 
 //recieving  mail  ends here
@@ -579,18 +573,9 @@ app.post('/reset-password/:token', async (req, res) => {
 
 
 // Routes
-app.get('/', async (req, res, next) => {
-  try {
-    let laptops = await LaptopListing.find({});
-    res.render('pages/home', { 
-      title: 'Home - The Laptop Hub',
-      laptops,
-      hideNavbar: false,
-      hideFooter: false 
-    });
-  } catch (error) {
-    next(error);
-  }
+app.get('/', (req, res) => {
+  res.send('Hello World!');
+  
 });
 
 app.get('/home', async (req, res,next) => {
@@ -945,19 +930,4 @@ process.on('uncaughtException', (error) => {
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
 });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 

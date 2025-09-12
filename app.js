@@ -24,10 +24,10 @@ const app = express();
 const port = 3000;
 
 app.use(cors({
-    origin: "https://thelaptopshub.onrender.com", // frontend ka domain
-    methods: ["GET", "POST"]
+  origin: "https://thelaptopshub.onrender.com",  // tumhara frontend domain
+  methods: ["GET", "POST"],
+  allowedHeaders: ["Content-Type", "Authorization"]
 }));
-
 // View engine setup
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, '/views'));

@@ -17,7 +17,7 @@ const app = express();
 const port = process.env.PORT || 3000;
 
 app.use(cors({
-  origin: "https://thelaptopshub.onrender.com",  // sirf frontend domain allow karo
+  origin: "http://localhost:3000",  // sirf frontend domain allow karo
   methods: ["GET", "POST"],                     // jo methods chahiye
   allowedHeaders: ["Content-Type"]              // jo headers chahiye
 }));
@@ -27,7 +27,7 @@ app.use(express.json())
 // app.options('/*any', cors(corsOptions));
 
 app.use((req, res, next) => {
- res.header('Access-Control-Allow-Origin', 'https://thelaptopshub.onrender.com');
+ res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
  res.header('Access-Control-Allow-Methods', 'GET,POST,OPTIONS');
  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
  if (req.method === 'OPTIONS') {

@@ -1,18 +1,11 @@
-// Top par yeh lines add karo
+
 
 if (process.env.NODE_ENV !== "production") {
   require('dotenv').config();
 }
 
-
-
-
-
-
-
-
 const express = require('express');
-const expressLayouts = require('express-ejs-layouts'); // यह line add करें
+const expressLayouts = require('express-ejs-layouts'); 
 const path = require('path');
 const mongoose=require('mongoose');
 const LaptopListing=require("./model/laptopListing.js")
@@ -33,13 +26,13 @@ app.use(cors(corsOptions));
 app.options('/*any', cors(corsOptions));
 
 app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', 'https://thelaptopshub.onrender.com');
-  res.header('Access-Control-Allow-Methods', 'GET,POST,OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-  if (req.method === 'OPTIONS') {
-    return res.sendStatus(200);
-  }
-  next();
+ res.header('Access-Control-Allow-Origin', 'https://thelaptopshub.onrender.com');
+ res.header('Access-Control-Allow-Methods', 'GET,POST,OPTIONS');
+ res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+ if (req.method === 'OPTIONS') {
+ return res.sendStatus(200);
+ }
+ next();
 });
 
 
@@ -155,7 +148,7 @@ app.use(session({
   secret: process.env.SESSION_SECRET,
   resave: false,
   saveUninitialized: false,
-  cookie: { secure: false } // Set true if HTTPS
+  cookie: { secure: false } 
 }));
 
 app.use(flash());
@@ -270,8 +263,8 @@ let laptopCount= await LaptopListing.countDocuments();
     user: req.user,
     title: 'admin panel',
      laptopCount,
-    hideNavbar: false,   // yahan navbar hide ho jayega
-    hideFooter: true    // footer bhi hide ho jayega
+    hideNavbar: false,   
+    hideFooter: true    
   });}
   catch (error) {
     next(error);
@@ -410,7 +403,7 @@ const nodemailer = require('nodemailer');
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// Create transporter for nodemailer - यहाँ सही function name use करें
+// Create transporter for nodemailer - 
 
 
 // Email sending endpoint
@@ -419,10 +412,10 @@ app.use(bodyParser.urlencoded({ extended: true }));
 const transporter = nodemailer.createTransport({
   host: "smtp.gmail.com",
   port: 587,
-  secure: false, // TLS इस्तेमाल करता है
+  secure: false, 
   auth: {
-    user: process.env.EMAIL_USER,  // Gmail एड्रेस
-    pass: process.env.GOOGLE_APP_PASSWORD   // Gmail ऐप पासवर्ड (2FA होने पर)
+    user: process.env.EMAIL_USER,  
+    pass: process.env.GOOGLE_APP_PASSWORD   
   }
 });
 
@@ -432,14 +425,14 @@ app.post('/send-email', async (req, res) => {
   try {
     const { first_name, last_name, email, mobile, subject, message } = req.body;
 
-    // बेसिक वैलिडेशन
+  
     if (!first_name || !last_name || !subject) {
       return res.status(400).json({ error: "First Name, Last Name और Subject जरूरी हैं।" });
     }
 
     const mailOptions = {
       from: `"FixedMyRent" <${process.env.EMAIL_USER}>`,
-      to: 'amanv1871@gmail.com',  // अपनी तरफ से भी सेट कर सकते हैं, जैसे sales@example.com
+      to: 'amanv1871@gmail.com',  
       subject: `Inquiry from: ${first_name} ${last_name} - ${subject}`,
       html: `
         <h1>You have received a new inquiry</h1>
@@ -567,7 +560,7 @@ app.get('/reset-password/:token', async (req, res) => {
       return res.redirect('/forgot-password');
     }
     res.render('pages/reset-password', { token: req.params.token, message: req.flash('error') ,
-          hideNavbar: false,   // yahan navbar hide ho jayega
+          hideNavbar: false,   
     hideFooter: false 
     });
   } catch (err) {
@@ -646,7 +639,7 @@ app.get('/home', async (req, res,next) => {
     title: 'Home - The Laptop Hub' ,
     laptops,
     
-     hideNavbar: false,   // yahan navbar hide ho jayega
+     hideNavbar: false,   
     hideFooter: false 
   });}
   catch (error) {
@@ -658,7 +651,7 @@ app.get('/contact', (req, res,next) => {
   try{
   res.render('pages/contactUs', { 
     title: 'contact us',
-     hideNavbar: false,   // yahan navbar hide ho jayega
+     hideNavbar: false,   
     hideFooter: false 
 
   });}
@@ -671,7 +664,7 @@ app.get('/aboutUs', (req, res,next) => {
   try{
   res.render('pages/aboutUs', { 
     title: 'about us',
-     hideNavbar: false,   // yahan navbar hide ho jayega
+     hideNavbar: false,   
     hideFooter: false 
   });}
   catch (error) {
@@ -685,7 +678,7 @@ app.get('/getInTouch', (req, res,next) => {
 
   res.render('pages/getInTouch', { 
     title: 'get in touch us',
-    hideNavbar: false,   // yahan navbar hide ho jayega
+    hideNavbar: false,   
     hideFooter: false  
 
   });}

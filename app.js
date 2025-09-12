@@ -24,7 +24,7 @@ const app = express();
 const port = 3000;
 
 const corsOptions = {
-  origin: ['http://localhost:3000', 'https://your-domain.com'], // allowed frontend URLs
+  origin: ['http://localhost:3000', 'https://thelaptopshub.onrender.com/getInTouch'], // allowed frontend URLs
   optionsSuccessStatus: 200
 };
 app.use(cors(corsOptions));

@@ -236,11 +236,11 @@
 
             <% if (error && error.length > 0) { %>
          <div class="alert alert-danger">
-            <% error.forEach(msg => { %>
-            <p><%= msg %></p>
-         <% }) %>
-           </div>
-           <% } %>
+    <% error.forEach(msg => { %>
+      <p><%= msg %></p>
+    <% }) %>
+  </div>
+<% } %>
 
             
             <div class="login-link">
@@ -249,7 +249,7 @@
         </div>
     </div>
 
-    <script>
+    <!-- <script>
         document.getElementById('signupForm').addEventListener('submit', function(e) {
             let isValid = true;
             
@@ -296,6 +296,6 @@
                 e.preventDefault();
             }
         });
-    </script>
+    </script> -->
 </body>
 </html>

@@ -25,7 +25,7 @@
       const status = document.getElementById('status');
 
       try {
-        const res = await fetch('http:///send-email', {
+        const res = await fetch('http://thelaptopshub.onrender.com/send-email', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(data)

@@ -394,53 +394,43 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 // Create transporter for nodemailer - यहाँ सही function name use करें
 const transporter = nodemailer.createTransport({
- service:"gmail",
-  port: 465,
-  secure: true, // TLS
-  logger:true,
-  debug:true,
-  secureConnection:false,
+   host: "smtp-relay.brevo.com",
+  port: 587,
+
   auth: {
-    user: "amanv1871@gmail.com", //process.env.EMAIL_USER,
-    pass: "efhm mfjw kdcr phjg"  //process.env.GOOGLE_APP_PASSWORD
-  },
-  tls:{
-    rejectUnauthorized: true
+   user: process.env.BREVO_EMAIL_USER, //process.env.EMAIL_USER,
+    pass: process.env.BREVO_API_KEY   //process.env.GOOGLE_APP_PASSWORD
   }
+  
 });
 
 // Email sending endpoint
 // Email sending endpoint
 app.post('/send-email', async (req, res, next) => {
-    try {
-        const { name, email, subject, message } = req.body;
+  try {
+    const { name, email, subject, message } = req.body;
+    const mailOptions = {
+      from: `"TheLaptopHub" <${process.env.BREVO_EMAIL_USER}>`, // ब्रेओ अकाउंट email
+      to: 'amanv1871@gmail.com', // जहाँ भेजना हो
+      replyTo: email,
+      subject: `Contact Form: ${subject}`,
+      html: `
+        <h2>New Contact Form Submission</h2>
+        <p><strong>Name:</strong> ${name}</p>
+        <p><strong>Email:</strong> ${email}</p>
+        <p><strong>Subject:</strong> ${subject}</p>
+        <p><strong>Message:</strong></p>
+        <p>${message}</p>
+      `
+    };
 
-        // Setup email data
-        const mailOptions = {
-            from: process.env.EMAIL_USER, // <-- Yahan badlav karein
-            to: 'amanv1871@gmail.com',
-            replyTo: email, // <-- yeh optional hai, isse aap directly reply kar payenge
-            subject: `Contact Form: ${subject}`,
-            html: `
-                <h2>New Contact Form Submission</h2>
-                <p><strong>Name:</strong> ${name}</p>
-                <p><strong>Email:</strong> ${email}</p>
-                <p><strong>Subject:</strong> ${subject}</p>
-                <p><strong>Message:</strong></p>
-                <p>${message}</p>
-            `
-        };
-
-        // Send email
-        await transporter.sendMail(mailOptions);
-        
-        res.status(200).json({ message: 'Email sent successfully!' });
-    } catch (error) {
-        console.error('Error sending email:', error);
-        res.status(500).json({ message: 'Error sending email', error: error.message });
-    }
+    await transporter.sendMail(mailOptions);
+    res.status(200).json({ message: 'Email sent successfully!' });
+  } catch (error) {
+    console.error('Error sending email:', error);
+    res.status(500).json({ message: 'Error sending email', error: error.message });
+  }
 });
-
 
 
 //recieving  mail  ends here

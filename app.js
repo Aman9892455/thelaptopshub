@@ -16,14 +16,15 @@ const cors = require('cors');
 const app = express();
 const port = process.env.PORT || 3000;
 
-const corsOptions = {
-  origin: "https://thelaptopshub.onrender.com",
-  methods: ["GET", "POST", "OPTIONS"],
-  allowedHeaders: ["Content-Type"]
-};
-app.use(cors(corsOptions));
+app.use(cors({
+  origin: "https://thelaptopshub.onrender.com",  // sirf frontend domain allow karo
+  methods: ["GET", "POST"],                     // jo methods chahiye
+  allowedHeaders: ["Content-Type"]              // jo headers chahiye
+}));
 
-app.options('/*any', cors(corsOptions));
+app.use(express.json())
+
+// app.options('/*any', cors(corsOptions));
 
 app.use((req, res, next) => {
  res.header('Access-Control-Allow-Origin', 'https://thelaptopshub.onrender.com');

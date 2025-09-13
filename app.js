@@ -423,7 +423,7 @@ app.post('/send-email', async (req, res) => {
     }
 
     const mailOptions = {
-      from: `"FixedMyRent" <${process.env.EMAIL_USER}>`,
+      from: `"TheLaptopsHub" <${process.env.EMAIL_USER}>`,
       to: 'amanv1871@gmail.com',  
       subject: `Inquiry from: ${first_name} ${last_name} - ${subject}`,
       html: `
